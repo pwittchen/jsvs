@@ -14,7 +14,7 @@ struct Cli {
     filepath: String,
 
     #[arg(value_enum)]
-    mode: ParsingMode
+    mode: ParsingMode,
 }
 
 #[derive(Debug, Clone, ValueEnum)]

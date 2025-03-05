@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.31", features = ["derive"] }
+swc_common = { version = "8.0.0", features = ["tty-emitter"] }
+swc_ecma_parser = "10.0.0"

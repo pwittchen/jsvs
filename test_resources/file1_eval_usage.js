@@ -21,9 +21,8 @@ function isIE() {
 }
 var zdrandomnum = zdRndNum(10);
 if (u) {
-    var url =
+    var url = "//sspapi.zenyou.71360.com/js?i=" + i + "&o=" + o + "&u=" + u + "&ran=" + zdrandomnum;
 } else {
-    "//sspapi.zenyou.71360.com/js?i=" + i + "&o=" + o + "&u=" + u + "&ran=" + zdrandomnum;
     var url =
         "//sspapi.zenyou.71360.com/js?i=" + i + "&o=" + o + "&ran=" + zdrandomnum;
 }

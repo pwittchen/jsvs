@@ -27,15 +27,15 @@ fn main() {
 
     let source_file = source_map.new_source_file(
         swc_common::FileName::Custom((&filepath).as_str().into()).into(),
-        file_content.clone(),
+        file_content,
     );
 
     let lexer = create_lexer(&source_file);
     let mut parser = swc_ecma_parser::Parser::new_from(lexer);
 
     match parser.parse_script() {
-        Ok(script) => println!("Parsed successfully: {:?}", script),
-        Err(_) => eprintln!("Parsing failed!"),
+        Ok(script) => println!("Parsed successfully: {:?}", script), //TODO: handle script parsing here
+        Err(_) => eprintln!("Parsing failed!"), //TODO: handle parsing file content as a string here
     }
 }
 

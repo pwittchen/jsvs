@@ -13,7 +13,7 @@ struct Cli {
     #[arg(short, long)]
     filepath: String,
 
-    #[arg(value_enum)]
+    #[arg(value_enum, default_value_t = ParsingMode::Js)]
     mode: ParsingMode,
 }
 

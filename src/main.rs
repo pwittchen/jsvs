@@ -12,8 +12,9 @@ use swc_ecma_parser::{StringInput, Syntax, lexer::Lexer};
 struct Cli {
     #[arg(short, long)]
     filepath: String,
+
     #[arg(value_enum)]
-    mode: ParsingMode,
+    mode: ParsingMode
 }
 
 #[derive(Debug, Clone, ValueEnum)]

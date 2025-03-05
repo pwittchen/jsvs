@@ -33,7 +33,7 @@ Options:
 Script has two parsing modes `js` and `txt`.
 It was done due to the fact that script may be obfuscated or incorrectly formated,
 therefore it won't be possible to parse it as a valid JavaScript file, but we may want to analyze it anyway.
-That's why, we can analyze script as a text, which is unparsed script and still try to find vulnerabilities in it.
+That's why, we can analyze plain text as an unparsed script and still try to find vulnerabilities in it.
 
 Examples of parsing scripts:
 

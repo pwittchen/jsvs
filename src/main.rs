@@ -1,8 +1,9 @@
 use clap::Parser;
 use std::fs;
 use std::rc::Rc;
-use swc_common::{BytePos, SourceFile, SourceMap, sync::Lrc};
-use swc_ecma_parser::{StringInput, Syntax, lexer::Lexer};
+use swc_common::{sync::Lrc, BytePos, SourceFile, SourceMap};
+use swc_ecma_ast::Script;
+use swc_ecma_parser::{lexer::Lexer, StringInput, Syntax};
 
 #[derive(clap::Parser)]
 #[command(name = "JSVS")]
@@ -14,6 +15,8 @@ struct Cli {
 }
 
 fn main() {
+    //TODO: consider creating 2 modes: JS parsing and TXT parsing (latter for obfuscated code)
+
     let cli = Cli::parse();
     let filepath = cli.filepath;
 
@@ -34,8 +37,8 @@ fn main() {
     let mut parser = swc_ecma_parser::Parser::new_from(lexer);
 
     match parser.parse_script() {
-        Ok(script) => println!("Parsed successfully: {:?}", script), //TODO: handle script parsing here
-        Err(_) => eprintln!("Parsing failed!"), //TODO: handle parsing file content as a string here
+        Ok(script) => analyze_parsed_javascript_code(script),
+        Err(_) => eprintln!("Parsing failed!"),
     }
 }
 
@@ -50,4 +53,9 @@ fn create_lexer(source_file: &Rc<SourceFile>) -> Lexer {
         ),
         None,
     )
+}
+
+fn analyze_parsed_javascript_code(script: Script) {
+    //TODO: handle script parsing here
+    println!("Parsed successfully: {:?}", script)
 }

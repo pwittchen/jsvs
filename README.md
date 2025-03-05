@@ -29,11 +29,11 @@ Options:
   -V, --version              Print version
 ```
 
-Examples:
+Examples of parsing scripts:
 
 ```
-jsvs js -f test_resources/file1_eval_usage.js
-jsvs txt -f test_resources/file2_obfuscated_code.js
-jsvs txt -f test_resources/file3_clean_file.js
-jsvs js -f test_resources/file4_keylogger.js
+jsvs -f test_resources/file1_eval_usage.js -- js
+jsvs -f test_resources/file2_obfuscated_code.js -- txt
+jsvs -f test_resources/file3_clean_file.js -- txt
+jsvs -f test_resources/file4_keylogger.js -- js
 ```

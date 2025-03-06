@@ -1,3 +1,4 @@
+use base64::{Engine as _, engine::general_purpose};
 use clap::Parser;
 use regex::Regex;
 use std::fs;
@@ -57,11 +58,19 @@ fn analyze_javascript(file_content: String) {
 
     let base64_part_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
     let re = Regex::new(base64_part_pattern).unwrap();
-
-    for caps in re.find_iter(&file_content) {
-        println!("Found possible Base64 line: {}", caps.as_str());
+    let mut base64_string = String::new();
+    for value in re.find_iter(&file_content) {
+        base64_string.push_str(&value.as_str());
     }
 
-    //TODO: combine all found base64 value into one string, decode and analyze it
+    if !base64_string.as_str().is_empty() {
+        let decoded_bytes = general_purpose::STANDARD_NO_PAD
+            .decode(base64_string)
+            .expect("Failed to decode base64 string");
 
+        let decoded_string = String::from_utf8(decoded_bytes).expect("Invalid UTF-8");
+
+        println!("DECODED BASE64:");
+        println!("{}", decoded_string);
+    }
 }

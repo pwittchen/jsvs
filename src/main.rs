@@ -41,6 +41,7 @@ fn analyze_javascript(file_content: String) {
         "atob",
         "btoa",
         "window.addeventlistener(\"keydown\"",
+        "formdata()"
     ];
     for keyword in &suspicious_keywords {
         if let Some(index) = &file_content.to_lowercase().find(keyword) {

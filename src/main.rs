@@ -1,26 +1,14 @@
-use clap::{Parser, ValueEnum};
+use clap::Parser;
+use regex::Regex;
 use std::fs;
-use std::rc::Rc;
-use swc_common::{BytePos, SourceFile, SourceMap, sync::Lrc};
-use swc_ecma_ast::Script;
-use swc_ecma_parser::{StringInput, Syntax, lexer::Lexer};
 
-#[derive(clap::Parser)]
+#[derive(Parser)]
 #[command(name = "JSVS")]
 #[command(version = "0.1.0")]
 #[command(about = "JavaScript Vulnerability Scanner", long_about = None)]
 struct Cli {
     #[arg(short, long)]
     filepath: String,
-
-    #[arg(value_enum, default_value_t = ParsingMode::Js)]
-    mode: ParsingMode,
-}
-
-#[derive(Debug, Clone, ValueEnum)]
-enum ParsingMode {
-    Js,
-    Txt,
 }
 
 fn main() {
@@ -32,50 +20,48 @@ fn main() {
         return;
     }
 
-    let file_content = fs::read_to_string(&filepath).expect("Cannot read file");
+    let file_content = fs::read_to_string(filepath).expect("Cannot read file");
+    analyze_javascript(file_content);
+}
 
-    match cli.mode {
-        ParsingMode::Js => analyze_javascript(&filepath, file_content),
-        ParsingMode::Txt => analyze_text(&filepath, file_content),
+fn analyze_javascript(file_content: String) {
+    //TODO: return vector with found issues instead of printing them directly here
+    //TODO: define types of vector: warning, alert
+    //TODO: check difference between indexes for xhr.open/XMLHttpReq.responseText and eval/execscript
+    // where low value is possibility of remote script execution
+    //TODO: when all basic pattern detection will be implemented, refactor this code
+
+    let suspicious_keywords = [
+        "eval",
+        "execscript",
+        "document.write",
+        "xhr.open",
+        "xmlhttpreq.responsetext",
+        "atob",
+        "btoa",
+        "window.addeventlistener(\"keydown\"",
+    ];
+    for keyword in &suspicious_keywords {
+        if let Some(index) = &file_content.to_lowercase().find(keyword) {
+            println!("keyword: {} found at index: {}", keyword, index);
+        }
     }
-}
 
-fn analyze_javascript(filepath: &String, file_content: String) {
-    let source_map: Lrc<SourceMap> = Default::default();
-
-    let source_file = source_map.new_source_file(
-        swc_common::FileName::Custom((&filepath).as_str().into()).into(),
-        file_content,
-    );
-
-    let lexer = create_lexer(&source_file);
-    let mut parser = swc_ecma_parser::Parser::new_from(lexer);
-
-    match parser.parse_script() {
-        Ok(script) => analyze_parsed_script(script),
-        Err(_) => eprintln!("Parsing failed!"),
+    let mut hex_counter: i32 = 0;
+    let hex_pattern = r"(?i)\b(?:0x[a-f0-9]+|#[a-f0-9]{6}|\b[a-f0-9]{8}\b)\b";
+    let re = Regex::new(hex_pattern).unwrap();
+    for _ in re.find_iter(&file_content) {
+        hex_counter += 1;
     }
-}
+    println!("Found {} hex values", hex_counter);
 
-fn create_lexer(source_file: &Rc<SourceFile>) -> Lexer {
-    Lexer::new(
-        Syntax::Es(Default::default()),
-        Default::default(),
-        StringInput::new(
-            &source_file.src,
-            BytePos(0),
-            BytePos(source_file.src.len() as u32),
-        ),
-        None,
-    )
-}
+    let base64_part_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
+    let re = Regex::new(base64_part_pattern).unwrap();
 
-fn analyze_parsed_script(script: Script) {
-    //TODO: handle script parsing here
-    println!("Parsed successfully: {:?}", script)
-}
+    for caps in re.find_iter(&file_content) {
+        println!("Found possible Base64 line: {}", caps.as_str());
+    }
 
-fn analyze_text(filepath: &String, file_content: String) {
-    //TODO: implement text analysis
-    println!("Analyzing text file {}", filepath);
+    //TODO: combine all found base64 value into one string, decode and analyze it
+
 }

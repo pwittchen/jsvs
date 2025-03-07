@@ -13,6 +13,12 @@ cargo build
 cargo test
 ```
 
+## cleaning
+
+```
+cargo clean
+```
+
 ## usage
 
 ```

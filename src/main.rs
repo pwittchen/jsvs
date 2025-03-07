@@ -55,8 +55,47 @@ fn analyze_javascript(file_content: String, is_base64_decoded: bool) {
     ));
     vulnerabilities.extend(find_vulnerabilities_by_hex_count(&file_content));
     vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
+    vulnerabilities.extend(find_possible_remote_code_execution(&vulnerabilities));
 
     print_detected_vulnerabilities(vulnerabilities);
+}
+
+fn find_vulnerabilities_by_rules(
+    file_content: &String,
+    is_base64_decoded: bool,
+) -> Vec<DetectedVulnerability> {
+    let mut detected_vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
+    for rule in get_vulnerability_rules() {
+        for keyword in rule.keywords {
+            if let Some(index) = &file_content.to_lowercase().find(&keyword) {
+                let description: String = if is_base64_decoded {
+                    format!(
+                        "{} {}",
+                        &rule.description.clone(),
+                        "(base64 decoded)".bold().bright_magenta()
+                    )
+                } else {
+                    rule.description.to_string()
+                };
+
+                let vulnerability_type = if rule.vulnerability_type == Alert {
+                    Alert
+                } else if is_base64_decoded {
+                    Alert
+                } else {
+                    Warning
+                };
+
+                detected_vulnerabilities.push(DetectedVulnerability {
+                    keyword,
+                    keyword_index: *index,
+                    description,
+                    vulnerability_type,
+                });
+            }
+        }
+    }
+    detected_vulnerabilities
 }
 
 fn find_vulnerabilities_in_base64(content: &String) -> Vec<DetectedVulnerability> {
@@ -125,39 +164,45 @@ fn find_vulnerabilities_by_hex_count(content: &String) -> Vec<DetectedVulnerabil
     detected_vulnerabilities
 }
 
-fn find_vulnerabilities_by_rules(
-    file_content: &String,
-    is_base64_decoded: bool,
+fn find_possible_remote_code_execution(
+    vulnerabilities: &Vec<DetectedVulnerability>,
 ) -> Vec<DetectedVulnerability> {
     let mut detected_vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
-    for rule in get_vulnerability_rules() {
-        for keyword in rule.keywords {
-            if let Some(index) = &file_content.to_lowercase().find(&keyword) {
-                let description: String = if is_base64_decoded {
-                    format!(
-                        "{} {}",
-                        &rule.description.clone(),
-                        "(base64 decoded)".bold().bright_magenta()
-                    )
-                } else {
-                    rule.description.to_string()
-                };
+    let mut response_text_index: usize = 0;
+    let mut eval_index: usize = 0;
+    let mut exec_script_index: usize = 0;
+    for v in vulnerabilities {
+        if v.keyword == "xmlhttpreq.responsetext" {
+            response_text_index = v.keyword_index
+        } else if v.keyword == "eval" {
+            eval_index = v.keyword_index
+        } else if v.keyword == "execscript" {
+            exec_script_index = v.keyword_index
+        }
+    }
 
-                let vulnerability_type = if rule.vulnerability_type == Alert {
-                    Alert
-                } else if is_base64_decoded {
-                    Alert
-                } else {
-                    Warning
-                };
+    if (response_text_index > 0 && eval_index > 0) || (exec_script_index > 0 && eval_index > 0) {
+        let diff_eval: usize = if response_text_index <= eval_index {
+            eval_index - response_text_index
+        } else {
+            999
+        };
 
-                detected_vulnerabilities.push(DetectedVulnerability {
-                    keyword,
-                    keyword_index: *index,
-                    description,
-                    vulnerability_type,
-                });
-            }
+        let diff_exec: usize = if response_text_index <= exec_script_index {
+            exec_script_index - response_text_index
+        } else {
+            999
+        };
+
+        if diff_eval < 100 || diff_exec < 100 {
+            detected_vulnerabilities.push(DetectedVulnerability {
+                keyword: String::from("eval/execscript(xmlhttpreq.responsetext)"),
+                keyword_index: eval_index,
+                description: String::from(
+                    "Possible execution of the malicious code from the remote server",
+                ),
+                vulnerability_type: Alert,
+            })
         }
     }
     detected_vulnerabilities

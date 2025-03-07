@@ -67,7 +67,7 @@ fn analyze_javascript(file_content: String) {
         }
     }
 
-    let mut hex_counter: i32 = 0;
+    let mut hex_counter: usize = 0;
     let hex_pattern = r"(?i)\b(?:0x[a-f0-9]+|#[a-f0-9]{6}|\b[a-f0-9]{8}\b)\b";
     let re = Regex::new(hex_pattern).unwrap();
     for _ in re.find_iter(&file_content) {

@@ -32,6 +32,8 @@ Example:
 jsvs -f test_file.js
 ```
 
+![screenshot](screenshot.png)
+
 ## system-wide installation
 
 ```

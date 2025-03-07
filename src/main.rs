@@ -1,5 +1,5 @@
 use crate::VulnerabilityType::{Alert, Warning};
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
 use clap::Parser;
 use colored::Colorize;
 use regex::Regex;
@@ -173,7 +173,7 @@ fn print_detected_vulnerabilities(detected_vulnerabilities: &mut Vec<DetectedVul
             } else {
                 "Warning".yellow()
             },
-            v.keyword_index.to_string().blue(),
+            v.keyword_index.to_string().bright_blue(),
             v.keyword.to_string().underline(),
             v.description.cyan()
         );

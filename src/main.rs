@@ -72,8 +72,8 @@ fn analyze_javascript(file_content: String) {
     }
     println!("Found {} hex values", hex_counter);
 
-    let base64_part_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
-    let re = Regex::new(base64_part_pattern).unwrap();
+    let long_base64_part_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
+    let re = Regex::new(long_base64_part_pattern).unwrap();
     let mut base64_string = String::new();
     for value in re.find_iter(&file_content) {
         base64_string.push_str(&value.as_str());

@@ -138,7 +138,7 @@ fn find_vulnerabilities_by_rules(
     for rule in get_vulnerability_rules() {
         for keyword in rule.keywords {
             if let Some(index) = &file_content.to_lowercase().find(&keyword) {
-                let description = if is_base64_decoded {
+                let description: String = if is_base64_decoded {
                     format!("{} (base64 decoded)", &rule.description.clone())
                 } else {
                     rule.description.to_string()
@@ -155,7 +155,7 @@ fn find_vulnerabilities_by_rules(
                 detected_vulnerabilities.push(DetectedVulnerability {
                     keyword,
                     keyword_index: *index,
-                    description: description.to_string(),
+                    description,
                     vulnerability_type,
                 });
             }

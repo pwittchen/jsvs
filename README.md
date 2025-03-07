@@ -31,3 +31,10 @@ Example:
 ```
 jsvs -f test_file.js
 ```
+
+## system-wide installation
+
+```
+cargo build --release
+sudo cp ./target/release/jsvs /usr/local/bin
+```

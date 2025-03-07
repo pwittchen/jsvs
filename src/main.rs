@@ -17,14 +17,11 @@ fn main() {
     let filepath = cli.filepath;
 
     if fs::metadata(&filepath).is_err() {
-        eprintln!("Error: filepath {} does not exist!", &filepath);
+        eprintln!("Error: filepath {} does not exist", &filepath);
         return;
     }
 
-    let file_content = fs::read_to_string(filepath)
-        .expect("Cannot read file!")
-        .to_lowercase();
-
+    let file_content = fs::read_to_string(filepath).expect("Cannot read file");
     analyze_javascript(file_content);
 }
 
@@ -71,7 +68,7 @@ fn analyze_javascript(file_content: String) {
     ];
 
     for keyword in &suspicious_keywords {
-        if let Some(index) = &file_content.find(keyword) {
+        if let Some(index) = &file_content.to_lowercase().find(keyword) {
             println!("keyword: {} found at index: {}", keyword, index);
         }
     }

@@ -47,21 +47,16 @@ fn main() {
 }
 
 fn analyze_javascript(file_content: String, is_base64_decoded: bool) {
-    let mut detected_vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
+    let mut vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
 
-    for v in find_vulnerabilities_by_rules(&file_content, is_base64_decoded) {
-        detected_vulnerabilities.push(v);
-    }
+    vulnerabilities.extend(find_vulnerabilities_by_rules(
+        &file_content,
+        is_base64_decoded,
+    ));
+    vulnerabilities.extend(find_vulnerabilities_by_hex_count(&file_content));
+    vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
 
-    for v in find_vulnerabilities_by_hex_count(&file_content) {
-        detected_vulnerabilities.push(v);
-    }
-
-    for v in find_vulnerabilities_in_base64(&file_content) {
-        detected_vulnerabilities.push(v);
-    }
-
-    print_detected_vulnerabilities(&mut detected_vulnerabilities);
+    print_detected_vulnerabilities(vulnerabilities);
 }
 
 fn find_vulnerabilities_in_base64(content: &String) -> Vec<DetectedVulnerability> {
@@ -139,7 +134,11 @@ fn find_vulnerabilities_by_rules(
         for keyword in rule.keywords {
             if let Some(index) = &file_content.to_lowercase().find(&keyword) {
                 let description: String = if is_base64_decoded {
-                    format!("{} (base64 decoded)", &rule.description.clone())
+                    format!(
+                        "{} {}",
+                        &rule.description.clone(),
+                        "(base64 decoded)".bold().bright_magenta()
+                    )
                 } else {
                     rule.description.to_string()
                 };
@@ -164,7 +163,7 @@ fn find_vulnerabilities_by_rules(
     detected_vulnerabilities
 }
 
-fn print_detected_vulnerabilities(detected_vulnerabilities: &mut Vec<DetectedVulnerability>) {
+fn print_detected_vulnerabilities(detected_vulnerabilities: Vec<DetectedVulnerability>) {
     for v in detected_vulnerabilities {
         println!(
             " • {}\t index: {}\t keyword: {} {}",

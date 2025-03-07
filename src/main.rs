@@ -44,6 +44,7 @@ fn analyze_javascript(file_content: String) {
         "addeventlistener(\"keydown\"",
         "addeventlistener(\"keyup\"",
         "addeventlistener(\"submit\"",
+        "addeventlistener(\"beforeunload\"",
         "addeventlistener",
         "document.queryselectorall",
         "preventdefault()",

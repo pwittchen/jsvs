@@ -46,8 +46,10 @@ fn analyze_javascript(file_content: String) {
         "btoa",
         "addeventlistener(\"keydown\"",
         "addeventlistener(\"keyup\"",
+        "addeventlistener(\"keypress\"",
         "addeventlistener(\"submit\"",
-        "addeventlistener(\"onload\"",
+        "addeventlistener(\"load\"",
+        "addeventlistener(\"unload\"",
         "addeventlistener(\"beforeunload\"",
         "addeventlistener",
         "document.queryselectorall",
@@ -64,6 +66,8 @@ fn analyze_javascript(file_content: String) {
         "iframe",
         "http://",
         "https://",
+        "customerData",
+        ".js"
     ];
 
     for keyword in &suspicious_keywords {

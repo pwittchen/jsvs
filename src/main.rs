@@ -57,6 +57,7 @@ fn analyze_javascript(file_content: String) {
         "http://",
         "https://",
     ];
+
     for keyword in &suspicious_keywords {
         if let Some(index) = &file_content.to_lowercase().find(keyword) {
             println!("keyword: {} found at index: {}", keyword, index);

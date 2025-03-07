@@ -41,7 +41,15 @@ fn analyze_javascript(file_content: String) {
         "atob",
         "btoa",
         "window.addeventlistener(\"keydown\"",
-        "formdata()"
+        "formdata()",
+        "fetch",
+        "localstorage",
+        "document.createelement",
+        "document.createelement(\"script\")",
+        "document.createelement(\"iframe\")",
+        "iframe",
+        "http://",
+        "https://",
     ];
     for keyword in &suspicious_keywords {
         if let Some(index) = &file_content.to_lowercase().find(keyword) {

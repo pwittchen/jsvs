@@ -64,9 +64,34 @@ fn analyze_javascript(file_content: String) {
         "http://",
         "https://",
         "customerData",
-        ".js"
+        ".js",
+        "input-payment",
+        "input-payment-firstname",
+        "input-payment-lastname",
+        "input-payment-email",
+        "input-payment-telephone",
+        "input-payment-city",
+        "input-payment-postcode",
+        "input-firstname",
+        "input-lastname",
+        "input-cc-owner",
+        "input-cc-number",
+        "input-cc-expire-date",
+        "cc_expire_date_year",
+        "input-cc-cvv2",
+        "holder",
+        "cvv",
+        "email",
+        "telephone",
+        "phone",
+        "address",
+        "city",
+        "postcode",
+        "zip",
+        "zone",
+        "state",
+        "country",
     ];
-
     for keyword in &suspicious_keywords {
         if let Some(index) = &file_content.to_lowercase().find(keyword) {
             println!("keyword: {} found at index: {}", keyword, index);
@@ -81,21 +106,19 @@ fn analyze_javascript(file_content: String) {
     }
     println!("Found {} hex values", hex_counter);
 
-    let long_base64_part_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
-    let re = Regex::new(long_base64_part_pattern).unwrap();
-    let mut base64_string = String::new();
+    let base64_pattern = r"(?i)\b[A-Za-z0-9+/=]{50,}\b";
+    let re = Regex::new(base64_pattern).unwrap();
+    let mut base64_encoded_text = String::new();
     for value in re.find_iter(&file_content) {
-        base64_string.push_str(&value.as_str());
+        base64_encoded_text.push_str(&value.as_str());
     }
 
-    if !base64_string.as_str().is_empty() {
+    if !base64_encoded_text.as_str().is_empty() {
         let decoded_bytes = general_purpose::STANDARD_NO_PAD
-            .decode(base64_string)
+            .decode(base64_encoded_text)
             .expect("Failed to decode base64 string");
 
-        let decoded_string = String::from_utf8(decoded_bytes).expect("Invalid UTF-8");
-
-        println!("DECODED BASE64:");
-        println!("{}", decoded_string);
+        let base64_decoded_text = String::from_utf8(decoded_bytes).expect("Invalid UTF-8");
+        analyze_javascript(base64_decoded_text);
     }
 }

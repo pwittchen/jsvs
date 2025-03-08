@@ -1,6 +1,8 @@
 # jsvs
 JavaScript Vulnerability Scanner written in Rust
 
+ [![Build](https://github.com/pwittchen/jsvs/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/pwittchen/jsvs/actions/workflows/rust.yml)
+
 ## building
 
 ```

@@ -326,7 +326,7 @@ fn get_vulnerability_rules() -> [VulnerabilityRule; 17] {
             vulnerability_type: Alert,
         },
         VulnerabilityRule {
-            keywords: vec![String::from("createlement")],
+            keywords: vec![String::from("createlement"), String::from("appendchild")],
             description: String::from("DOM manipulation"),
             vulnerability_type: Warning,
         },

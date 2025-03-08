@@ -57,7 +57,7 @@ fn find_vulnerabilities_in_the_javascript_code(
         &file_content,
         is_base64_decoded,
     ));
-    vulnerabilities.extend(find_suspocious_hex_obfuscation(&file_content));
+    vulnerabilities.extend(find_suspicious_hex_obfuscation(&file_content));
     vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
     vulnerabilities.extend(find_possible_remote_code_execution(&vulnerabilities));
     vulnerabilities
@@ -183,7 +183,7 @@ fn count_hex_values(content: &String) -> usize {
     hex_counter
 }
 
-fn find_suspocious_hex_obfuscation(content: &String) -> Vec<DetectedVulnerability> {
+fn find_suspicious_hex_obfuscation(content: &String) -> Vec<DetectedVulnerability> {
     let hex_counter = count_hex_values(&content);
     let mut detected_vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
 

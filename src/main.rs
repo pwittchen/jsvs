@@ -189,7 +189,7 @@ fn find_suspocious_hex_obfuscation(content: &String) -> Vec<DetectedVulnerabilit
 
     if hex_counter > 0 {
         detected_vulnerabilities.push(DetectedVulnerability {
-            keyword: "hex".to_string(),
+            keyword: "0x".to_string(),
             keyword_index: 0,
             description: if hex_counter < 10 {
                 String::from(format!("{} hexadecimal values", hex_counter))

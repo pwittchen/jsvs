@@ -43,8 +43,24 @@ fn main() {
     }
 
     let file_content = fs::read_to_string(filepath).expect("Cannot read file");
-    let vulnerabilities = find_vulnerabilities_in_javascript_code(file_content, false);
+    let vulnerabilities = find_vulnerabilities_in_the_javascript_code(file_content, false);
     print_summary_of_the_analysis(&vulnerabilities);
+}
+
+fn find_vulnerabilities_in_the_javascript_code(
+    file_content: String,
+    is_base64_decoded: bool,
+) -> Vec<DetectedVulnerability> {
+    let mut vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
+
+    vulnerabilities.extend(find_vulnerabilities_by_rules(
+        &file_content,
+        is_base64_decoded,
+    ));
+    vulnerabilities.extend(find_suspocious_hex_obfuscation(&file_content));
+    vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
+    vulnerabilities.extend(find_possible_remote_code_execution(&vulnerabilities));
+    vulnerabilities
 }
 
 fn print_summary_of_the_analysis(vulnerabilities: &Vec<DetectedVulnerability>) {
@@ -81,22 +97,6 @@ fn print_detected_vulnerabilities(detected_vulnerabilities: &Vec<DetectedVulnera
             v.description.cyan()
         );
     }
-}
-
-fn find_vulnerabilities_in_javascript_code(
-    file_content: String,
-    is_base64_decoded: bool,
-) -> Vec<DetectedVulnerability> {
-    let mut vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
-
-    vulnerabilities.extend(find_vulnerabilities_by_rules(
-        &file_content,
-        is_base64_decoded,
-    ));
-    vulnerabilities.extend(find_suspocious_hex_obfuscation(&file_content));
-    vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
-    vulnerabilities.extend(find_possible_remote_code_execution(&vulnerabilities));
-    vulnerabilities
 }
 
 fn find_vulnerabilities_by_rules(
@@ -155,7 +155,7 @@ fn find_vulnerabilities_in_base64(content: &String) -> Vec<DetectedVulnerability
             .expect("Failed to decode base64 string");
 
         let base64_decoded_text = String::from_utf8(decoded_bytes).expect("Invalid UTF-8");
-        detected_vulnerabilities.extend(find_vulnerabilities_in_javascript_code(
+        detected_vulnerabilities.extend(find_vulnerabilities_in_the_javascript_code(
             base64_decoded_text,
             true,
         ));

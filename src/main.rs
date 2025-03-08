@@ -43,10 +43,10 @@ fn main() {
     }
 
     let file_content = fs::read_to_string(filepath).expect("Cannot read file");
-    analyze_javascript(file_content, false);
+    analyze_javascript_code(file_content, false);
 }
 
-fn analyze_javascript(file_content: String, is_base64_decoded: bool) {
+fn analyze_javascript_code(file_content: String, is_base64_decoded: bool) {
     let mut vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
 
     vulnerabilities.extend(find_vulnerabilities_by_rules(
@@ -116,7 +116,7 @@ fn find_vulnerabilities_in_base64(content: &String) -> Vec<DetectedVulnerability
             .expect("Failed to decode base64 string");
 
         let base64_decoded_text = String::from_utf8(decoded_bytes).expect("Invalid UTF-8");
-        analyze_javascript(base64_decoded_text, true);
+        analyze_javascript_code(base64_decoded_text, true);
     }
     detected_vulnerabilities
 }

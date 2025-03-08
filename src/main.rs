@@ -250,7 +250,7 @@ fn find_possible_remote_code_execution(
     detected_vulnerabilities
 }
 
-fn get_vulnerability_rules() -> [VulnerabilityRule; 16] {
+fn get_vulnerability_rules() -> [VulnerabilityRule; 17] {
     [
         VulnerabilityRule {
             keywords: vec![
@@ -348,6 +348,14 @@ fn get_vulnerability_rules() -> [VulnerabilityRule; 16] {
         VulnerabilityRule {
             keywords: vec![String::from("http://")],
             description: String::from("Insecure API Call without SSL"),
+            vulnerability_type: Alert,
+        },
+        VulnerabilityRule {
+            keywords: vec![
+                String::from("window.location.assign"),
+                String::from("window.location.reload"),
+            ],
+            description: String::from("Possible session hijacking"),
             vulnerability_type: Alert,
         },
         VulnerabilityRule {

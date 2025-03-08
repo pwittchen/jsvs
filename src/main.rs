@@ -48,17 +48,17 @@ fn main() {
 }
 
 fn find_vulnerabilities_in_the_javascript_code(
-    file_content: String,
+    code: String,
     is_base64_decoded: bool,
 ) -> Vec<DetectedVulnerability> {
     let mut vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
 
     vulnerabilities.extend(find_vulnerabilities_by_rules(
-        &file_content,
+        &code,
         is_base64_decoded,
     ));
-    vulnerabilities.extend(find_suspicious_hex_obfuscation(&file_content));
-    vulnerabilities.extend(find_vulnerabilities_in_base64(&file_content));
+    vulnerabilities.extend(find_suspicious_hex_obfuscation(&code));
+    vulnerabilities.extend(find_vulnerabilities_in_base64_text(&code));
     vulnerabilities.extend(find_possible_remote_code_execution(&vulnerabilities));
     vulnerabilities
 }
@@ -137,7 +137,7 @@ fn find_vulnerabilities_by_rules(
     detected_vulnerabilities
 }
 
-fn find_vulnerabilities_in_base64(content: &String) -> Vec<DetectedVulnerability> {
+fn find_vulnerabilities_in_base64_text(content: &String) -> Vec<DetectedVulnerability> {
     let base64_encoded_text = encode_base64_text(content);
     let mut detected_vulnerabilities: Vec<DetectedVulnerability> = Vec::new();
     if !base64_encoded_text.as_str().is_empty() {

@@ -45,7 +45,6 @@ jsvs -f test_file.js
 ## system-wide installation
 
 ```
-cargo build --release
 cargo install --path .
 ```
 

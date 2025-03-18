@@ -29,7 +29,7 @@ JavaScript Vulnerability Scanner
 Usage: jsvs --filepath <FILEPATH>
 
 Options:
-  -f, --filepath <FILEPATH>  
+  -f, --filepath <FILEPATH>
   -h, --help                 Print help
   -V, --version              Print version
 ```
@@ -46,5 +46,11 @@ jsvs -f test_file.js
 
 ```
 cargo build --release
-sudo cp ./target/release/jsvs /usr/local/bin
+cargo install --path .
+```
+
+## uninstallation
+
+```
+cargo uninstall jsvs
 ```
